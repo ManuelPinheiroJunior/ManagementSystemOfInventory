@@ -1,19 +1,20 @@
-# Sistema de Gestão de Inventário
+# Inventory Management System
 
-Melhore o sistema de gestão de inventário em C# para incluir uma função que ordena todos os produtos pela sua quantidade em stock.
+Enhance the inventory management system in C# to include a function that sorts all products by their stock quantity.
 
-## Funcionalidades:
+## Features:
 
-1. Adicionar um produto ao inventário (nome, preço, quantidade em stock).
-2. Remover um produto do inventário.
-3. Atualizar a quantidade de um produto no inventário.
-4. Listar todos os produtos no inventário.
-5. Procurar por produtos que contenham uma determinada substring nos seus nomes.
-6. Gerar um relatório de produtos com quantidade abaixo de um certo limite.
-7. Listar todos os produtos ordenados por quantidade em stock.
+1. Add a product to the inventory (name, price, stock quantity).
+2. Remove a product from the inventory.
+3. Update the quantity of a product in the inventory.
+4. List all products in the inventory.
+5. Search for products containing a specific substring in their names.
+6. Generate a report of products with quantities below a certain limit.
+7. List all products ordered by stock quantity.
 
-## Requisitos adicionais:
+## Additional Requirements:
 
-- Utilizar classes e objetos para modelar os produtos e o inventário.
-- Implementar uma interface de usuário simples usando entrada/saída de console.
-- Utilizar estruturas de dados apropriadas para armazenar os produtos no inventário.
+- Utilize classes and objects to model the products and the inventory.
+- Implement a simple user interface using console input/output.
+- Use appropriate data structures to store the products in the inventory.
+
