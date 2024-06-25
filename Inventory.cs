@@ -6,11 +6,12 @@ namespace InventoryManagementSystem
 {
     class Inventory
     {
-        private List<Product> products;
+        private readonly List<Product> products = new List<Product>();
+        private readonly IInputOutputService ioService;
 
-        public Inventory()
+        public Inventory(IInputOutputService inputOutputService)
         {
-            products = new List<Product>();
+            this.ioService = inputOutputService;
         }
 
         public void AddProduct(Product product)
@@ -20,7 +21,7 @@ namespace InventoryManagementSystem
 
         public bool RemoveProduct(string name)
         {
-            Product product = products.FirstOrDefault(p => p.Name == name);
+            var product = products.FirstOrDefault(p => p.Name == name);
             if (product != null)
             {
                 products.Remove(product);
@@ -29,9 +30,9 @@ namespace InventoryManagementSystem
             return false;
         }
 
-        public bool UpdateQuantity(string name, int newQuantity)
+        public bool UpdateProductQuantity(string name, int newQuantity)
         {
-            Product product = products.FirstOrDefault(p => p.Name == name);
+            var product = products.FirstOrDefault(p => p.Name == name);
             if (product != null)
             {
                 product.Quantity = newQuantity;
@@ -40,132 +41,107 @@ namespace InventoryManagementSystem
             return false;
         }
 
-        public void AddProductFromInput()
+        public void ProcessProductAddition()
         {
-            Console.WriteLine("Enter product name:");
-            string name = Console.ReadLine();
+            string name = ioService.ReadLine("Enter product name:");
+            double price = ioService.ReadDouble("Enter product price:", "Invalid price. Please enter again:");
+            int quantity = ioService.ReadInt("Enter product stock quantity:", "Invalid quantity. Please enter again:");
 
-            Console.WriteLine("Enter product price:");
-            double price = ReadDoubleInput("Invalid price. Please enter again:");
-
-            Console.WriteLine("Enter product stock quantity:");
-            int quantity = ReadIntInput("Invalid quantity. Please enter again:");
-
-            Product product = new Product(name, price, quantity);
-            AddProduct(product);
-
-            Console.WriteLine("Product added successfully.");
+            AddProduct(new Product(name, price, quantity));
+            ioService.WriteLine("Product added successfully.");
         }
 
-        public void RemoveProductByName()
+        public void ProcessProductRemoval()
         {
-            Console.WriteLine("Enter the name of the product you want to remove:");
-            string name = Console.ReadLine();
-
+            string name = ioService.ReadLine("Enter the name of the product you want to remove:");
             if (RemoveProduct(name))
             {
-                Console.WriteLine("Product removed successfully.");
+                ioService.WriteLine("Product removed successfully.");
             }
             else
             {
-                Console.WriteLine("Product not found in inventory.");
+                ioService.WriteLine("Product not found in inventory.");
             }
         }
 
-        public void UpdateProductQuantity()
+        public void UpdateProductStock()
         {
-            Console.WriteLine("Enter the name of the product you want to update:");
-            string name = Console.ReadLine();
+            string name = ioService.ReadLine("Enter the name of the product you want to update:");
+            int quantity = ioService.ReadInt("Enter the new stock quantity of the product:", "Invalid quantity. Please enter again:");
 
-            Console.WriteLine("Enter the new stock quantity of the product:");
-            int quantity = ReadIntInput("Invalid quantity. Please enter again:");
-
-            if (UpdateQuantity(name, quantity))
+            if (UpdateProductQuantity(name, quantity))
             {
-                Console.WriteLine("Quantity updated successfully.");
+                ioService.WriteLine("Quantity updated successfully.");
             }
             else
             {
-                Console.WriteLine("Product not found in inventory.");
+                ioService.WriteLine("Product not found in inventory.");
             }
         }
 
         public void ListAllProducts()
         {
-            Console.WriteLine("Products in inventory:");
+            ioService.WriteLine("Products in inventory:");
             foreach (var product in products)
             {
-                Console.WriteLine(product);
+                ioService.WriteLine(product.ToString());
             }
         }
 
-        public void SearchProductByName()
+        public void SearchProducts()
         {
-            Console.WriteLine("Enter the substring to search for in product names:");
-            string substring = Console.ReadLine();
-
+            string substring = ioService.ReadLine("Enter the substring to search for in product names:");
             var foundProducts = products.Where(p => p.Name.Contains(substring)).ToList();
             if (foundProducts.Any())
             {
-                Console.WriteLine("Products found:");
+                ioService.WriteLine("Products found:");
                 foreach (var product in foundProducts)
                 {
-                    Console.WriteLine(product);
+                    ioService.WriteLine(product.ToString());
                 }
             }
             else
             {
-                Console.WriteLine("No product found with the provided substring.");
+                ioService.WriteLine("No product found with the provided substring.");
             }
         }
 
-        public void GenerateReportBelowLimit()
+        public void GenerateReportBelowQuantity()
         {
-            Console.WriteLine("Enter the quantity limit for the report:");
-            int limit = ReadIntInput("Invalid limit. Please enter again:");
-
+            int limit = ioService.ReadInt("Enter the quantity limit for the report:", "Invalid limit. Please enter again:");
             var productsBelowLimit = products.Where(p => p.Quantity < limit).ToList();
             if (productsBelowLimit.Any())
             {
-                Console.WriteLine($"Products with quantity below {limit}:");
+                ioService.WriteLine($"Products with quantity below {limit}:");
                 foreach (var product in productsBelowLimit)
                 {
-                    Console.WriteLine(product);
+                    ioService.WriteLine(product.ToString());
                 }
             }
             else
             {
-                Console.WriteLine("No products with quantity below the provided limit.");
+                ioService.WriteLine("No products with quantity below the provided limit.");
             }
         }
 
-        public void ListProductsOrderedByQuantity()
+        public void ListProductsByQuantity()
         {
-            Console.WriteLine("Products ordered by stock quantity:");
+            ioService.WriteLine("Products ordered by stock quantity:");
             foreach (var product in products.OrderBy(p => p.Quantity))
             {
-                Console.WriteLine(product);
+                ioService.WriteLine(product.ToString());
             }
-        }
-
-        private double ReadDoubleInput(string errorMessage)
-        {
-            double value;
-            while (!double.TryParse(Console.ReadLine(), out value) || value < 0)
-            {
-                Console.WriteLine(errorMessage);
-            }
-            return value;
-        }
-
-        private int ReadIntInput(string errorMessage)
-        {
-            int value;
-            while (!int.TryParse(Console.ReadLine(), out value) || value < 0)
-            {
-                Console.WriteLine(errorMessage);
-            }
-            return value;
         }
     }
+
+    interface IInputOutputService
+    {
+        void WriteLine(string message);
+        string ReadLine(string prompt);
+        double ReadDouble(string prompt, string errorMessage);
+        int ReadInt(string prompt, string errorMessage);
+    }
+
+    // Implement IInputOutputService to manage Console I/O operations.
+    // Example implementations and additional services can be created as needed.
 }
